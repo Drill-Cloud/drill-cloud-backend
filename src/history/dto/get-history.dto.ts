@@ -1,41 +1,23 @@
-import { Transform, Type } from 'class-transformer';
-import {
-  ArrayMaxSize,
-  IsArray,
-  IsDateString,
-  IsNotEmpty,
-  IsNumber,
-  IsOptional,
-  IsString,
-  Max,
-  Min,
-} from 'class-validator';
-import { parseCommaSeparatedList } from '../../common/query-list';
+import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
 
 export class GetHistoryDto {
   @IsNotEmpty()
   @IsString()
   edge!: string;
 
-  @IsOptional()
-  @Transform(({ value }) => parseCommaSeparatedList(value))
-  @IsArray()
-  @ArrayMaxSize(500)
-  @IsString({ each: true })
-  tags?: string[];
+  @IsNotEmpty()
+  @IsString()
+  tag!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsDateString()
-  from?: string;
+  from!: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsDateString()
-  to?: string;
+  to!: string;
 
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  @Min(100)
-  @Max(5000)
-  targetPoints?: number;
+  @IsNotEmpty()
+  @IsString()
+  granulate!: string;
 }

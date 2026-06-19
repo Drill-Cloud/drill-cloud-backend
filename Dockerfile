@@ -1,18 +1,14 @@
-FROM node:22-alpine AS deps
+FROM node:22-alpine
+
 WORKDIR /app
+
 COPY package*.json ./
 RUN npm ci
 
-FROM node:22-alpine AS build
-WORKDIR /app
-COPY --from=deps /app/node_modules ./node_modules
-COPY . .
-RUN npm run build
+COPY tsconfig*.json ./
+COPY src ./src
 
-FROM node:22-alpine AS runtime
-WORKDIR /app
+RUN npm run build && npm prune --omit=dev
+
 ENV NODE_ENV=production
-COPY package*.json ./
-RUN npm ci --omit=dev
-COPY --from=build /app/dist ./dist
 CMD ["node", "dist/main.js"]

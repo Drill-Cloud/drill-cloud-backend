@@ -4,9 +4,6 @@ export type EdgeItemDto = {
   parentId: string | null;
   tagIds: string[];
   tagCount: number;
-  currentTagCount: number;
-  liveTagCount: number;
-  lastDataAt: Date | null;
 };
 
 export type EdgeResponseDto = {

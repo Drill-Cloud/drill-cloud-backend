@@ -10,9 +10,6 @@ export function createEdgeResponse(rows: EdgeRow[]): EdgeResponseDto {
       parentId: row.parent_id,
       tagIds: row.tag_ids ?? [],
       tagCount: row.tag_count,
-      currentTagCount: row.current_tag_count,
-      liveTagCount: row.live_tag_count,
-      lastDataAt: row.last_data_at,
     })),
   };
 }

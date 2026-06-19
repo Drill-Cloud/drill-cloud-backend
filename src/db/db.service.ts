@@ -1,7 +1,5 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import { Pool, QueryResult, QueryResultRow } from 'pg';
-import { getIntegerConfig } from '../common/config-number';
 
 type DatabaseHealth = {
   now: Date;
@@ -13,18 +11,11 @@ type DatabaseHealth = {
 export class DbService implements OnModuleInit, OnModuleDestroy {
   private pool!: Pool;
 
-  constructor(private readonly config: ConfigService) {}
-
   /** Создает пул PostgreSQL и проверяет БД до начала обработки запросов. */
   async onModuleInit(): Promise<void> {
-    const connectionString = this.config.get<string>('DATABASE_URL');
-    if (!connectionString) {
-      throw new Error('DATABASE_URL is required.');
-    }
-
     this.pool = new Pool({
-      connectionString,
-      max: getIntegerConfig(this.config, 'PG_POOL_MAX', 20),
+      connectionString: process.env.DATABASE_URL,
+      max: Number(process.env.PG_POOL_MAX),
       idleTimeoutMillis: 30_000,
       connectionTimeoutMillis: 5_000,
       statement_timeout: 60_000,

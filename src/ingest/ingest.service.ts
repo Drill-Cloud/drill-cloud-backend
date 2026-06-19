@@ -1,11 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { getIntegerConfig } from '../common/config-number';
-import { normalizeRequiredText } from '../common/normalize-text';
 import { DbService } from '../db/db.service';
 import { IngestPointDto } from './dto/ingest-point.dto';
-
-const DEFAULT_MAX_BATCH_SIZE = 10_000;
 
 type NormalizedPoint = {
   time: Date;
@@ -20,10 +15,7 @@ type IngestResult = {
 
 @Injectable()
 export class IngestService {
-  constructor(
-    private readonly db: DbService,
-    private readonly config: ConfigService,
-  ) {}
+  constructor(private readonly db: DbService) {}
 
   /** Проверяет батч, пишет сырую историю и обновляет последний снимок current для UI/SSE. */
   async ingestPoints(points: IngestPointDto[]): Promise<IngestResult> {
@@ -89,10 +81,7 @@ export class IngestService {
 
   /** Защищает API от слишком больших ingest-запросов, занимающих соединение с БД надолго. */
   private assertBatchSize(size: number): void {
-    const maxBatchSize = Math.max(
-      getIntegerConfig(this.config, 'INGEST_MAX_BATCH_SIZE', DEFAULT_MAX_BATCH_SIZE),
-      1,
-    );
+    const maxBatchSize = Number(process.env.INGEST_MAX_BATCH_SIZE);
 
     if (size > maxBatchSize) {
       throw new BadRequestException(`Batch size must not exceed ${maxBatchSize} points.`);
@@ -101,17 +90,11 @@ export class IngestService {
 
   /** Приводит входной DTO к нормализованному виду для вставки в history. */
   private normalizePoint(point: IngestPointDto): NormalizedPoint {
-    const edge = normalizeRequiredText(point.edge, 'edge');
-    const tag = normalizeRequiredText(point.tag, 'tag');
     const time = this.parsePointTime(point);
 
-    if (!Number.isFinite(point.value)) {
-      throw new BadRequestException('value must be a finite number.');
-    }
-
     return {
-      edge,
-      tag,
+      edge: point.edge,
+      tag: point.tag,
       value: point.value,
       time,
     };
