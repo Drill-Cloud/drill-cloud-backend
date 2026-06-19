@@ -1,0 +1,24 @@
+services:
+  drill-cloud-v3:
+    container_name: drill-cloud-v3
+    build: .
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT:-3101}
+      DATABASE_URL: ${DATABASE_URL}
+      CORS_ALLOWED_ORIGINS: ${CORS_ALLOWED_ORIGINS:-}
+      INGEST_API_KEY: ${INGEST_API_KEY:-}
+      PG_POOL_MAX: ${PG_POOL_MAX:-20}
+      INGEST_MAX_BATCH_SIZE: ${INGEST_MAX_BATCH_SIZE:-10000}
+      CURRENT_EVENTS_POLL_MS: ${CURRENT_EVENTS_POLL_MS:-1000}
+      HISTORY_TARGET_POINTS: ${HISTORY_TARGET_POINTS:-2000}
+      HISTORY_MAX_TARGET_POINTS: ${HISTORY_MAX_TARGET_POINTS:-5000}
+    ports:
+      - "${PORT:-3101}:${PORT:-3101}"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true

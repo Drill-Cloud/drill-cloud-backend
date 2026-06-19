@@ -1,0 +1,33 @@
+import { ValidationPipe } from '@nestjs/common';
+import { NestFactory } from '@nestjs/core';
+import compression from 'compression';
+import { AppModule } from './app.module';
+
+/** Запускает HTTP API со сжатием, CORS и глобальной валидацией DTO. */
+async function bootstrap() {
+  const app = await NestFactory.create(AppModule);
+  app.use(compression());
+
+  const corsAllowedOrigins = process.env.CORS_ALLOWED_ORIGINS
+    ? process.env.CORS_ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean)
+    : true;
+
+  app.enableCors({
+    origin: corsAllowedOrigins,
+    credentials: true,
+    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
+  });
+
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
+
+  await app.listen(process.env.PORT ?? 3101);
+}
+
+void bootstrap();

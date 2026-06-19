@@ -1,0 +1,30 @@
+import { Controller, Get, Header, Query, Sse } from '@nestjs/common';
+import { Observable } from 'rxjs';
+import { CurrentEventsService } from './current-events.service';
+import { CurrentService } from './current.service';
+import { CurrentResponseDto } from './dto/current-response.dto';
+import { GetCurrentDto } from './dto/get-current.dto';
+
+@Controller('current')
+export class CurrentController {
+  constructor(
+    private readonly current: CurrentService,
+    private readonly currentEvents: CurrentEventsService,
+  ) {}
+
+  /** Возвращает последние известные значения по одному edge с опциональным фильтром тегов. */
+  @Get()
+  @Header('Cache-Control', 'no-store')
+  @Header('Pragma', 'no-cache')
+  @Header('Expires', '0')
+  findByEdge(@Query() query: GetCurrentDto) {
+    return this.current.findByEdge(query);
+  }
+
+  /** Открывает SSE-поток текущих значений по edge с отправкой только изменившихся снимков. */
+  @Sse('events')
+  @Header('Cache-Control', 'no-store')
+  events(@Query() query: GetCurrentDto): Observable<{ data: CurrentResponseDto }> {
+    return this.currentEvents.stream(query);
+  }
+}
