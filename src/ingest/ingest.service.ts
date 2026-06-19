@@ -25,7 +25,7 @@ export class IngestService {
     private readonly config: ConfigService,
   ) {}
 
-  /** Проверяет батч и записывает сырые точки в существующую таблицу history. */
+  /** Проверяет батч, пишет сырую историю и обновляет последний снимок current для UI/SSE. */
   async ingestPoints(points: IngestPointDto[]): Promise<IngestResult> {
     if (!points.length) {
       return { processed: 0 };
@@ -45,6 +45,36 @@ export class IngestService {
           $3::varchar[],
           $4::double precision[]
         ) AS point(time, edge, tag, value)
+      `,
+      [
+        normalized.map((point) => point.time),
+        normalized.map((point) => point.edge),
+        normalized.map((point) => point.tag),
+        normalized.map((point) => point.value),
+      ],
+    );
+
+    await this.db.query(
+      `
+        INSERT INTO current (edge, tag, value, "createdAt", "updatedAt")
+        SELECT DISTINCT ON (edge, tag)
+          edge,
+          tag,
+          value,
+          time AS "createdAt",
+          time AS "updatedAt"
+        FROM unnest(
+          $1::timestamp[],
+          $2::varchar[],
+          $3::varchar[],
+          $4::double precision[]
+        ) AS point(time, edge, tag, value)
+        ORDER BY edge ASC, tag ASC, time DESC
+        ON CONFLICT (edge, tag)
+        DO UPDATE SET
+          value = EXCLUDED.value,
+          "updatedAt" = EXCLUDED."updatedAt"
+        WHERE current."updatedAt" <= EXCLUDED."updatedAt"
       `,
       [
         normalized.map((point) => point.time),
