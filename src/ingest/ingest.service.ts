@@ -1,4 +1,4 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { DbService } from '../db/db.service';
 import { IngestPointDto } from './dto/ingest-point.dto';
 
@@ -22,8 +22,6 @@ export class IngestService {
     if (!points.length) {
       return { processed: 0 };
     }
-
-    this.assertBatchSize(points.length);
 
     const normalized: NormalizedPoint[] = points.map((point) => ({
       edge: point.edge,
@@ -83,14 +81,4 @@ export class IngestService {
 
     return { processed: normalized.length };
   }
-
-  /** Защищает API от слишком больших ingest-запросов, занимающих соединение с БД надолго. */
-  private assertBatchSize(size: number): void {
-    const maxBatchSize = Number(process.env.INGEST_MAX_BATCH_SIZE);
-
-    if (size > maxBatchSize) {
-      throw new BadRequestException(`Batch size must not exceed ${maxBatchSize} points.`);
-    }
-  }
-
 }
