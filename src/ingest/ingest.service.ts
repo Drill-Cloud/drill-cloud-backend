@@ -25,7 +25,12 @@ export class IngestService {
 
     this.assertBatchSize(points.length);
 
-    const normalized = points.map((point) => this.normalizePoint(point));
+    const normalized: NormalizedPoint[] = points.map((point) => ({
+      edge: point.edge,
+      tag: point.tag,
+      value: point.value,
+      time: new Date((point.time ?? point.timestamp) as string | number),
+    }));
 
     await this.db.query(
       `
@@ -88,34 +93,4 @@ export class IngestService {
     }
   }
 
-  /** Приводит входной DTO к нормализованному виду для вставки в history. */
-  private normalizePoint(point: IngestPointDto): NormalizedPoint {
-    const time = this.parsePointTime(point);
-
-    return {
-      edge: point.edge,
-      tag: point.tag,
-      value: point.value,
-      time,
-    };
-  }
-
-  /** Принимает ISO-время или миллисекунды Unix и отклоняет точки без валидного времени. */
-  private parsePointTime(point: IngestPointDto): Date {
-    if (point.time) {
-      const date = new Date(point.time);
-      if (!Number.isNaN(date.getTime())) {
-        return date;
-      }
-    }
-
-    if (point.timestamp !== undefined) {
-      const date = new Date(point.timestamp);
-      if (!Number.isNaN(date.getTime())) {
-        return date;
-      }
-    }
-
-    throw new BadRequestException('Each point must contain valid time or timestamp.');
-  }
 }
