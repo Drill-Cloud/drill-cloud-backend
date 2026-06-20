@@ -15,7 +15,6 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit(): Promise<void> {
     this.pool = new Pool({
       connectionString: process.env.DATABASE_URL,
-      max: Number(process.env.PG_POOL_MAX),
       idleTimeoutMillis: 30_000,
       connectionTimeoutMillis: 5_000,
       statement_timeout: 60_000,
