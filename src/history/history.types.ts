@@ -1,6 +1,4 @@
 export type HistoryRow = {
-  edge: string;
-  tag: string;
   time: Date;
   min_value: number;
   avg_value: number;

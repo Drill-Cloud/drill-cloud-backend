@@ -17,25 +17,18 @@ export class HistoryRepository {
     const result = await this.db.query<HistoryRow>(
       `
         SELECT
-          $1::varchar AS edge,
-          $2::varchar AS tag,
-          bucket AS time,
+          time_bucket($5::interval, timestamp) AS time,
           min(value)::double precision AS min_value,
           avg(value)::double precision AS avg_value,
           max(value)::double precision AS max_value,
           count(*)::integer AS point_count
-        FROM (
-          SELECT
-            time_bucket($5::interval, timestamp) AS bucket,
-            value
-          FROM history
-          WHERE edge = $1
-            AND tag = $2
-            AND timestamp >= $3
-            AND timestamp < $4
-        ) AS bucketed
-        GROUP BY bucket
-        ORDER BY bucket ASC
+        FROM history
+        WHERE edge = $1
+          AND tag = $2
+          AND timestamp >= $3
+          AND timestamp < $4
+        GROUP BY time
+        ORDER BY time ASC
       `,
       [edge, tag, from, to, granulate],
     );
