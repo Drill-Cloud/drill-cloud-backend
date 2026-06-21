@@ -7,7 +7,7 @@ Lightweight Drill Cloud API for an existing PostgreSQL/TimescaleDB database.
 - No migrations.
 - No `tag-translation` module.
 - No alarm log writes.
-- No automatic `current`, `edge`, or `tag` upserts during ingest.
+- No automatic `edge` or `tag` upserts during ingest.
 
 ## Database
 
@@ -36,17 +36,15 @@ Historical chart ranges use continuous aggregates:
 - `POST /ingest`
 - `POST /ingest/:edge`
 
-`POST /ingest` accepts an array of points:
+`POST /ingest` accepts one point:
 
 ```json
-[
-  {
-    "edge": "edge5",
-    "tag": "hook_weight_1",
-    "time": "2026-06-19T00:00:00Z",
-    "value": 12.34
-  }
-]
+{
+  "edge": "edge5",
+  "tag": "hook_weight_1",
+  "time": "2026-06-19T00:00:00Z",
+  "value": 12.34
+}
 ```
 
 `POST /ingest/:edge` accepts a compact edge payload:

@@ -17,68 +17,47 @@ type IngestResult = {
 export class IngestService {
   constructor(private readonly db: DbService) {}
 
-  /** Проверяет батч, пишет сырую историю и обновляет последний снимок current для UI/SSE. */
-  async ingestPoints(points: IngestPointDto[]): Promise<IngestResult> {
-    if (!points.length) {
-      return { processed: 0 };
-    }
-
-    const normalized: NormalizedPoint[] = points.map((point) => ({
+  /** Пишет одну сырую точку в history и обновляет текущий снимок current для UI/SSE. */
+  async ingestPoint(point: IngestPointDto): Promise<IngestResult> {
+    const normalized: NormalizedPoint = {
       edge: point.edge,
       tag: point.tag,
       value: point.value,
       time: new Date((point.time ?? point.timestamp) as string | number),
-    }));
+    };
 
     await this.db.query(
       `
         INSERT INTO history (timestamp, edge, tag, value)
-        SELECT time, edge, tag, value
-        FROM unnest(
-          $1::timestamp[],
-          $2::varchar[],
-          $3::varchar[],
-          $4::double precision[]
-        ) AS point(time, edge, tag, value)
+        VALUES ($1, $2, $3, $4)
       `,
-      [
-        normalized.map((point) => point.time),
-        normalized.map((point) => point.edge),
-        normalized.map((point) => point.tag),
-        normalized.map((point) => point.value),
-      ],
+      [normalized.time, normalized.edge, normalized.tag, normalized.value],
     );
 
     await this.db.query(
       `
         INSERT INTO current (edge, tag, value, "createdAt", "updatedAt")
-        SELECT DISTINCT ON (edge, tag)
-          edge,
-          tag,
-          value,
-          time AS "createdAt",
-          time AS "updatedAt"
-        FROM unnest(
-          $1::timestamp[],
-          $2::varchar[],
-          $3::varchar[],
-          $4::double precision[]
-        ) AS point(time, edge, tag, value)
-        ORDER BY edge ASC, tag ASC, time DESC
+        VALUES ($1, $2, $3, NOW(), NOW())
         ON CONFLICT (edge, tag)
         DO UPDATE SET
-          value = EXCLUDED.value,
-          "updatedAt" = EXCLUDED."updatedAt"
-        WHERE current."updatedAt" <= EXCLUDED."updatedAt"
+          value = $3,
+          "updatedAt" = NOW()
       `,
-      [
-        normalized.map((point) => point.time),
-        normalized.map((point) => point.edge),
-        normalized.map((point) => point.tag),
-        normalized.map((point) => point.value),
-      ],
+      [normalized.edge, normalized.tag, normalized.value],
     );
 
-    return { processed: normalized.length };
+    return { processed: 1 };
+  }
+
+  /** Сохраняет несколько точек без batch SQL: каждая точка проходит тот же линейный путь. */
+  async ingestPoints(points: IngestPointDto[]): Promise<IngestResult> {
+    let processed = 0;
+
+    for (const point of points) {
+      const result = await this.ingestPoint(point);
+      processed += result.processed;
+    }
+
+    return { processed };
   }
 }
