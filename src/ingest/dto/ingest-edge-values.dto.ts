@@ -1,15 +1,8 @@
-import { Type } from 'class-transformer';
-import { IsDateString, IsNumber, IsObject, IsOptional } from 'class-validator';
+import { IsDateString, IsObject } from 'class-validator';
 
 export class IngestEdgeValuesDto {
-  @IsOptional()
   @IsDateString()
-  time?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  timestamp?: number;
+  timestamp!: string;
 
   @IsObject()
   values!: Record<string, number>;

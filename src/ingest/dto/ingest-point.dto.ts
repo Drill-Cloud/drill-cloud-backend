@@ -1,5 +1,5 @@
 import { Type } from 'class-transformer';
-import { IsDateString, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
 
 export class IngestPointDto {
   @IsNotEmpty()
@@ -10,14 +10,8 @@ export class IngestPointDto {
   @IsString()
   tag!: string;
 
-  @IsOptional()
   @IsDateString()
-  time?: string;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsNumber()
-  timestamp?: number;
+  timestamp!: string;
 
   @Type(() => Number)
   @IsNumber()

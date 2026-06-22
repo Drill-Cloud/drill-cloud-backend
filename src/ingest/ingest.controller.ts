@@ -22,7 +22,6 @@ export class IngestController {
       edge,
       tag,
       value: Number(value),
-      time: body.time,
       timestamp: body.timestamp,
     }));
 

@@ -42,7 +42,7 @@ Historical chart ranges use continuous aggregates:
 {
   "edge": "edge5",
   "tag": "hook_weight_1",
-  "time": "2026-06-19T00:00:00Z",
+  "timestamp": "2026-06-19T00:00:00Z",
   "value": 12.34
 }
 ```
@@ -51,7 +51,7 @@ Historical chart ranges use continuous aggregates:
 
 ```json
 {
-  "time": "2026-06-19T00:00:00Z",
+  "timestamp": "2026-06-19T00:00:00Z",
   "values": {
     "hook_weight_1": 12.34,
     "rotary_rpm": 80

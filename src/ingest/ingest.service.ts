@@ -2,13 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { DbService } from '../db/db.service';
 import { IngestPointDto } from './dto/ingest-point.dto';
 
-type NormalizedPoint = {
-  time: Date;
-  edge: string;
-  tag: string;
-  value: number;
-};
-
 type IngestResult = {
   processed: number;
 };
@@ -17,21 +10,14 @@ type IngestResult = {
 export class IngestService {
   constructor(private readonly db: DbService) {}
 
-  /** Пишет одну сырую точку в history и обновляет текущий снимок current для UI/SSE. */
+  /** Пишет одну входящую точку в history и обновляет текущий снимок current для UI/SSE. */
   async ingestPoint(point: IngestPointDto): Promise<IngestResult> {
-    const normalized: NormalizedPoint = {
-      edge: point.edge,
-      tag: point.tag,
-      value: point.value,
-      time: new Date((point.time ?? point.timestamp) as string | number),
-    };
-
     await this.db.query(
       `
         INSERT INTO history (timestamp, edge, tag, value)
         VALUES ($1, $2, $3, $4)
       `,
-      [normalized.time, normalized.edge, normalized.tag, normalized.value],
+      [point.timestamp, point.edge, point.tag, point.value],
     );
 
     await this.db.query(
@@ -43,7 +29,7 @@ export class IngestService {
           value = $3,
           "updatedAt" = NOW()
       `,
-      [normalized.edge, normalized.tag, normalized.value],
+      [point.edge, point.tag, point.value],
     );
 
     return { processed: 1 };
