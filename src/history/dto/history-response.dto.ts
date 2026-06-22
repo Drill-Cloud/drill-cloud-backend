@@ -1,22 +1,11 @@
 export type HistoryPointDto = {
-  t: number;
-  min: number;
-  avg: number;
-  max: number;
-  count: number;
-};
-
-export type HistorySeriesDto = {
-  edge: string;
-  tag: string;
-  points: HistoryPointDto[];
+  time: Date;
+  min_value: number;
+  avg_value: number;
+  max_value: number;
+  point_count: number;
 };
 
 export type HistoryResponseDto = {
-  edge: string;
-  tag: string;
-  from: Date;
-  to: Date;
-  granulate: string;
-  series: HistorySeriesDto[];
+  rows: HistoryPointDto[];
 };

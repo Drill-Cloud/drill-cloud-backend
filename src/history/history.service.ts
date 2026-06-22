@@ -1,7 +1,6 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { GetHistoryDto } from './dto/get-history.dto';
 import { HistoryResponseDto } from './dto/history-response.dto';
-import { createHistoryResponse } from './history.mapper';
 import { HistoryRepository } from './history.repository';
 
 @Injectable()
@@ -21,21 +20,7 @@ export class HistoryService {
       throw new BadRequestException('from cannot be greater than to.');
     }
 
-    const rows = await this.repository.findBucketedRange(
-      query.edge,
-      query.tag,
-      from,
-      to,
-      query.granulate,
-    );
-
-    return createHistoryResponse({
-      edge: query.edge,
-      tag: query.tag,
-      from,
-      to,
-      granulate: query.granulate,
-      rows,
-    });
+    const rows = await this.repository.findBucketedRange(query.edge, query.tag, from, to, query.granulate);
+    return { rows };
   }
 }
