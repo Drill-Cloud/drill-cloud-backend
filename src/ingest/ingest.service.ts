@@ -22,8 +22,8 @@ export class IngestService {
 
     await this.db.query(
       `
-        INSERT INTO current (edge, tag, value, "createdAt", "updatedAt")
-        VALUES ($1, $2, $3, NOW(), NOW())
+        INSERT INTO current (edge, tag, value, "updatedAt")
+        VALUES ($1, $2, $3, NOW())
         ON CONFLICT (edge, tag)
         DO UPDATE SET
           value = $3,
