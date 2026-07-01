@@ -6,7 +6,6 @@ export type TagItemDto = {
   max: number | null;
   comment: string;
   unitOfMeasurement: string;
-  edgeIds: string[];
   precision: number | null;
 };
 

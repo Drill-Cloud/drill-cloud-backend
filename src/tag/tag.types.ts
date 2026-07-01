@@ -6,6 +6,5 @@ export type TagRow = {
   max: number | null;
   comment: string;
   unit_of_measurement: string;
-  edge_ids: string[];
   precision: number | null;
 };

@@ -6,16 +6,14 @@ import { EdgeRow } from './edge.types';
 export class EdgeRepository {
   constructor(private readonly db: DbService) {}
 
-  /** Читает каталог edge без расчетов по текущим значениям. */
+  /** Reads the edge catalog. */
   async findAll(parentId: string | null, search: string | null): Promise<EdgeRow[]> {
     const result = await this.db.query<EdgeRow>(
       `
       SELECT
         e.id,
         e.name,
-        e.parent_id,
-        e.tag_ids,
-        cardinality(e.tag_ids)::integer AS tag_count
+        e.parent_id
       FROM edge AS e
       WHERE ($1::varchar IS NULL OR e.parent_id = $1::varchar)
         AND (

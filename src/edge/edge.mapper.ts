@@ -8,8 +8,6 @@ export function createEdgeResponse(rows: EdgeRow[]): EdgeResponseDto {
       id: row.id,
       name: row.name,
       parentId: row.parent_id,
-      tagIds: row.tag_ids ?? [],
-      tagCount: row.tag_count,
     })),
   };
 }
