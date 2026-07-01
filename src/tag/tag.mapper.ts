@@ -12,7 +12,6 @@ export function createTagResponse(rows: TagRow[]): TagResponseDto {
       max: row.max,
       comment: row.comment,
       unitOfMeasurement: row.unit_of_measurement,
-      edgeIds: row.edge_ids ?? [],
       precision: row.precision,
     })),
   };

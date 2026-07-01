@@ -8,12 +8,8 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(compression());
 
-  const corsAllowedOrigins = process.env.CORS_ALLOWED_ORIGINS
-    ? process.env.CORS_ALLOWED_ORIGINS.split(',').map((origin) => origin.trim()).filter(Boolean)
-    : true;
-
   app.enableCors({
-    origin: corsAllowedOrigins,
+    origin: process.env.CORS_ALLOWED_ORIGINS,
     credentials: true,
     methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowedHeaders: ['Content-Type', 'Authorization', 'x-api-key'],
@@ -27,7 +23,7 @@ async function bootstrap() {
     }),
   );
 
-  await app.listen(process.env.PORT ?? 3101);
+  await app.listen(process.env.PORT as string);
 }
 
 void bootstrap();

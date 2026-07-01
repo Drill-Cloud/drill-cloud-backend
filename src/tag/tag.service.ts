@@ -10,9 +10,8 @@ export class TagService {
 
   /** Нормализует фильтры и возвращает метаданные тегов для UI. */
   async findAll(query: GetTagsDto): Promise<TagResponseDto> {
-    const edge = query.edge ?? null;
     const search = query.search ? `%${query.search}%` : null;
-    const rows = await this.repository.findAll(edge, search);
+    const rows = await this.repository.findAll(search);
     return createTagResponse(rows);
   }
 }
