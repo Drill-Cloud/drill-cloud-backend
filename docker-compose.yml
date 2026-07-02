@@ -1,6 +1,6 @@
 services:
   drill-cloud-v3:
-    container_name: drill-cloud-v3
+    container_name: drill-cloud-v3${branch:+-${branch}}
     build: .
     restart: unless-stopped
     environment:
