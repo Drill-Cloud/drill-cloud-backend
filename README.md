@@ -28,15 +28,17 @@ Historical chart ranges use continuous aggregates:
 
 ## API
 
-- `GET /health`
-- `GET /edge`
-- `GET /tag?edge=edge5&search=pressure`
-- `GET /current?edge=edge5&tags=tag1,tag2`
-- `GET /history?edge=edge5&tags=tag1,tag2&from=2026-06-01T00:00:00Z&to=2026-06-02T00:00:00Z`
-- `POST /ingest`
-- `POST /ingest/:edge`
+All routes are served under the `/api` prefix.
 
-`POST /ingest` accepts one point:
+- `GET /api/health`
+- `GET /api/edge`
+- `GET /api/tag?edge=edge5&search=pressure`
+- `GET /api/current?edge=edge5&tags=tag1,tag2`
+- `GET /api/history?edge=edge5&tags=tag1,tag2&from=2026-06-01T00:00:00Z&to=2026-06-02T00:00:00Z`
+- `POST /api/ingest`
+- `POST /api/ingest/:edge`
+
+`POST /api/ingest` accepts one point:
 
 ```json
 {
@@ -47,7 +49,7 @@ Historical chart ranges use continuous aggregates:
 }
 ```
 
-`POST /ingest/:edge` accepts a compact edge payload:
+`POST /api/ingest/:edge` accepts a compact edge payload:
 
 ```json
 {
