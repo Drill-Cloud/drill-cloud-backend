@@ -5,6 +5,7 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
+      BRANCH: ${branch:-}
       PORT: ${PORT}
       DATABASE_URL: ${DATABASE_URL}
       INGEST_API_KEY: ${INGEST_API_KEY}
