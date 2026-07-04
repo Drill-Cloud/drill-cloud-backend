@@ -1,0 +1,19 @@
+services:
+  drill-cloud-v3-dev:
+    container_name: container-drill-cloud-v3${branch:+-${branch}}
+    build: .
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+      PORT: ${PORT}
+      DATABASE_URL: ${DATABASE_URL}
+      INGEST_API_KEY: ${INGEST_API_KEY}
+      CURRENT_EVENTS_POLL_MS: ${CURRENT_EVENTS_POLL_MS}
+    expose:
+      - "3101"
+    networks:
+      - proxy
+
+networks:
+  proxy:
+    external: true
