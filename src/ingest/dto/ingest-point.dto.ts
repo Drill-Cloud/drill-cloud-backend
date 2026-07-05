@@ -1,5 +1,5 @@
-import { Type } from 'class-transformer';
-import { IsDateString, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { IsDateString, IsNotEmpty, IsString } from 'class-validator';
+import { IsNullableNumber } from '../../common/is-nullable-number.decorator';
 
 export class IngestPointDto {
   @IsNotEmpty()
@@ -13,7 +13,6 @@ export class IngestPointDto {
   @IsDateString()
   timestamp!: string;
 
-  @Type(() => Number)
-  @IsNumber()
-  value!: number;
+  @IsNullableNumber()
+  value!: number | null;
 }

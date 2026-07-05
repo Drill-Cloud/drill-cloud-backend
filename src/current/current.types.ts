@@ -1,7 +1,7 @@
 export type CurrentRow = {
   edge: string;
   tag: string;
-  value: number;
+  value: number | null;
   createdAt: Date;
   updatedAt: Date;
   name: string | null;

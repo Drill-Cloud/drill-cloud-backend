@@ -10,15 +10,17 @@ type IngestResult = {
 export class IngestService {
   constructor(private readonly db: DbService) {}
 
-  /** Пишет одну входящую точку в history и обновляет текущий снимок current для UI/SSE. */
+  /** Пишет числовую точку в history и всегда обновляет текущий снимок current для UI/SSE. */
   async ingestPoint(point: IngestPointDto): Promise<IngestResult> {
-    await this.db.query(
-      `
-        INSERT INTO history (timestamp, edge, tag, value)
-        VALUES ($1, $2, $3, $4)
-      `,
-      [point.timestamp, point.edge, point.tag, point.value],
-    );
+    if (point.value !== null) {
+      await this.db.query(
+        `
+          INSERT INTO history (timestamp, edge, tag, value)
+          VALUES ($1, $2, $3, $4)
+        `,
+        [point.timestamp, point.edge, point.tag, point.value],
+      );
+    }
 
     await this.db.query(
       `
