@@ -5,5 +5,5 @@ export class IngestEdgeValuesDto {
   timestamp!: string;
 
   @IsObject()
-  values!: Record<string, number>;
+  values!: Record<string, number | null>;
 }
