@@ -4,27 +4,23 @@ Lightweight Drill Cloud API for an existing PostgreSQL/TimescaleDB database.
 
 ## What is intentionally absent
 
-- No migrations.
 - No `tag-translation` module.
 - No alarm log writes.
 - No automatic `edge` or `tag` upserts during ingest.
 
 ## Database
 
+Database deployment, edge registration and migrations are described in [DATABASE_DEPLOYMENT.md](./DATABASE_DEPLOYMENT.md).
+
 The current `cloud` database schema uses these public tables:
 
-- `edge(id, name, parent_id, tag_ids)`
-- `tag(id, name, min, max, comment, unit_of_measurement, edge_ids, precision, tag_group)`
+- `edge(id, name, parent_id)`
+- `tag(id, name, min, max, comment, unit_of_measurement, precision, tag_group)`
 - `current(id, edge, tag, value, createdAt, updatedAt)`
-- `history(id, edge, timestamp, tag, value, createdAt)`
+- `history(edge, timestamp, tag, value, createdAt)`
+- `camera(edge, protocol, source)`
 
 `history` is expected to be a TimescaleDB hypertable partitioned by `timestamp`.
-Historical chart ranges use continuous aggregates:
-
-- `history_1m`
-- `history_5m`
-- `history_1h`
-- `history_1d`
 
 ## API
 
@@ -35,6 +31,7 @@ All routes are served under the `/api` prefix.
 - `GET /api/tag?edge=edge5&search=pressure`
 - `GET /api/current?edge=edge5&tags=tag1,tag2`
 - `GET /api/history?edge=edge5&tags=tag1,tag2&from=2026-06-01T00:00:00Z&to=2026-06-02T00:00:00Z`
+- `GET /api/camera?edge=edge5`
 - `POST /api/ingest`
 - `POST /api/ingest/:edge`
 
@@ -48,6 +45,8 @@ All routes are served under the `/api` prefix.
   "value": 12.34
 }
 ```
+
+`value` may be `null`. In that case `current` is updated, but `history` is not.
 
 `POST /api/ingest/:edge` accepts a compact edge payload:
 
