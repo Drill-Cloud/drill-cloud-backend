@@ -22,7 +22,7 @@ export class IngestController {
     const points = Object.entries(body.values).map(([tag, value]) => ({
       edge,
       tag,
-      value: Number(value),
+      value,
       timestamp: body.timestamp,
     }));
 
