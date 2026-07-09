@@ -13,6 +13,7 @@ type KeycloakPayload = JWTPayload & {
 
 @Injectable()
 export class KeycloakAuthService {
+  private readonly authDisabled = process.env.KEYCLOAK_AUTH_DISABLED === 'true';
   private readonly issuerUrl = process.env.KEYCLOAK_ISSUER_URL;
   private readonly clientId = process.env.KEYCLOAK_CLIENT_ID;
   private readonly edgeRolePrefix = process.env.KEYCLOAK_EDGE_ROLE_PREFIX || 'drill-edge-';
@@ -26,7 +27,7 @@ export class KeycloakAuthService {
     : null;
 
   isEnabled(): boolean {
-    return Boolean(this.issuerUrl && this.jwks);
+    return !this.authDisabled;
   }
 
   createSystemUser(): AuthUser {
@@ -39,8 +40,12 @@ export class KeycloakAuthService {
   }
 
   async verify(token: string): Promise<AuthUser> {
-    if (!this.issuerUrl || !this.jwks) {
+    if (this.authDisabled) {
       return this.createSystemUser();
+    }
+
+    if (!this.issuerUrl || !this.jwks) {
+      throw new UnauthorizedException('Keycloak auth is not configured.');
     }
 
     try {

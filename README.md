@@ -42,6 +42,7 @@ All routes are served under the `/api` prefix.
 Required backend env:
 
 ```bash
+KEYCLOAK_AUTH_DISABLED=false
 KEYCLOAK_ISSUER_URL=https://sso.greact.ru/realms/toir
 KEYCLOAK_CLIENT_ID=greact-drill-ui
 KEYCLOAK_EDGE_ROLE_PREFIX=drill-edge-
@@ -57,7 +58,8 @@ Recommended Keycloak setup:
 3. Use `drill-admin` or `admin` for users who can access all rigs.
 
 The backend reads both realm roles and client roles from the access token.
-Without `KEYCLOAK_ISSUER_URL` the backend runs in local development mode and does not restrict edges.
+For local development without Keycloak, set `KEYCLOAK_AUTH_DISABLED=true`.
+Do not set it on deployed environments.
 
 `POST /api/ingest` accepts one point:
 
