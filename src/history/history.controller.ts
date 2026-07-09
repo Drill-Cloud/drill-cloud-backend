@@ -1,8 +1,11 @@
-import { Controller, Get, Header, Query } from '@nestjs/common';
+import { Controller, Get, Header, Query, UseGuards } from '@nestjs/common';
+import { EdgeAccessGuard } from '../auth/edge-access.guard';
+import { KeycloakAuthGuard } from '../auth/keycloak-auth.guard';
 import { GetHistoryDto } from './dto/get-history.dto';
 import { HistoryService } from './history.service';
 
 @Controller('history')
+@UseGuards(KeycloakAuthGuard, EdgeAccessGuard)
 export class HistoryController {
   constructor(private readonly history: HistoryService) {}
 
