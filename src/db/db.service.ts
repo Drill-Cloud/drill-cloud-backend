@@ -7,6 +7,11 @@ type DatabaseHealth = {
   timescaledb_version: string | null;
 };
 
+function getPoolMax(): number | undefined {
+  const value = Number(process.env.PG_POOL_MAX);
+  return Number.isInteger(value) && value > 0 ? value : undefined;
+}
+
 @Injectable()
 export class DbService implements OnModuleInit, OnModuleDestroy {
   private pool!: Pool;
@@ -15,6 +20,7 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
   async onModuleInit(): Promise<void> {
     this.pool = new Pool({
       connectionString: process.env.DATABASE_URL,
+      max: getPoolMax(),
       idleTimeoutMillis: 30_000,
       connectionTimeoutMillis: 5_000,
       statement_timeout: 60_000,

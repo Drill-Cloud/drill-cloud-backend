@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { DbService } from '../db/db.service';
-import { HistoryRow } from './history.types';
+import { HistoryRow, HistorySeriesRow } from './history.types';
 
 @Injectable()
 export class HistoryRepository {
@@ -31,6 +31,37 @@ export class HistoryRepository {
         ORDER BY time ASC
       `,
       [edge, tag, from, to, granulate],
+    );
+
+    return result.rows;
+  }
+
+  /** Агрегирует историю сразу по нескольким тегам, чтобы live-график не создавал десятки параллельных запросов. */
+  async findBucketedRangeByTags(
+    edge: string,
+    tags: string[],
+    from: string,
+    to: string,
+    granulate: string,
+  ): Promise<HistorySeriesRow[]> {
+    const result = await this.db.query<HistorySeriesRow>(
+      `
+        SELECT
+          tag,
+          to_char(time_bucket($5::interval, timestamp), 'YYYY-MM-DD"T"HH24:MI:SS.MS"Z"') AS time,
+          min(value)::double precision AS min_value,
+          avg(value)::double precision AS avg_value,
+          max(value)::double precision AS max_value,
+          count(*)::integer AS point_count
+        FROM history
+        WHERE edge = $1
+          AND tag = ANY($2::varchar[])
+          AND timestamp >= $3::timestamp
+          AND timestamp < $4::timestamp
+        GROUP BY tag, time
+        ORDER BY tag ASC, time ASC
+      `,
+      [edge, tags, from, to, granulate],
     );
 
     return result.rows;
