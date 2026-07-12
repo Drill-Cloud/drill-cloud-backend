@@ -136,7 +136,7 @@ DO UPDATE SET
 
 ```sql
 INSERT INTO camera (edge, protocol, source)
-VALUES ('demo', 'wss', 'beta.video.drill.greact.ru/ws')
+VALUES ('demo', 'ws', 'localhost:9090/my-super-video')
 ON CONFLICT (edge, protocol, source) DO NOTHING;
 ```
 
@@ -366,7 +366,7 @@ CAMERA_12_RTSP_URL=rtsp://admin:admin@192.168.0.12:554/live/sub
 CAMERA_13_RTSP_URL=rtsp://admin:admin@192.168.0.13:554/live/sub
 
 # Простой встроенный demo-видеосигнал.
-DEMO_VIDEO_SOURCE=color=c=0x13294b:s=640x360:r=2
+DEMO_VIDEO_SOURCE=rtsp://127.0.0.1:8554/demo
 ```
 
 В режиме `dev` Node-RED должен публиковать только demo-топики:
@@ -402,13 +402,15 @@ ffmpeg -re -stream_loop -1 -i C:\video\demo.mp4 -an -c:v libx264 -preset veryfas
 В Node-RED для локальной разработки можно использовать источник:
 
 ```env
+FFMPEG_PATH=ffmpeg
+DEMO_VIDEO_SCRIPT=projects/nodered-edge5/scripts/demo-video.js
 DEMO_VIDEO_SOURCE=rtsp://127.0.0.1:8554/demo
 ```
 
 Ожидаемый MQTT-топик для demo-видео:
 
 ```text
-data/demo/video/v2/my-video-topic
+data/demo/video/v2/my-super-video
 ```
 
 ## 10. Проверка end-to-end
