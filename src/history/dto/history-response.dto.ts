@@ -9,3 +9,13 @@ export type HistoryPointDto = {
 export type HistoryResponseDto = {
   rows: HistoryPointDto[];
 };
+
+export type HistoryBatchPointDto = {
+  tag: string;
+  time: string;
+  value: number;
+};
+
+export type HistoryBatchResponseDto = {
+  rows: HistoryBatchPointDto[];
+};

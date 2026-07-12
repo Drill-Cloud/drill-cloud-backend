@@ -5,3 +5,9 @@ export type HistoryRow = {
   max_value: number;
   point_count: number;
 };
+
+export type HistoryBatchRow = {
+  tag: string;
+  time: string;
+  value: number;
+};
