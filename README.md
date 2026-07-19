@@ -18,7 +18,7 @@ The current `cloud` database schema uses these public tables:
 - `tag(id, name, min, max, comment, unit_of_measurement, precision, tag_group)`
 - `current(id, edge, tag, value, createdAt, updatedAt)`
 - `history(edge, timestamp, tag, value, createdAt)`
-- `camera(edge, protocol, source)`
+- `camera(edge, name, protocol, source)`
 
 `history` is expected to be a TimescaleDB hypertable partitioned by `timestamp`.
 
