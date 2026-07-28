@@ -135,8 +135,8 @@ DO UPDATE SET
 Минимальная камера:
 
 ```sql
-INSERT INTO camera (edge, protocol, source)
-VALUES ('demo', 'ws', 'localhost:9090/my-super-video')
+INSERT INTO camera (edge, name, protocol, source)
+VALUES ('demo', 'Demo video', 'ws', 'localhost:9090/my-super-video')
 ON CONFLICT (edge, protocol, source) DO NOTHING;
 ```
 
@@ -145,7 +145,7 @@ ON CONFLICT (edge, protocol, source) DO NOTHING;
 ```sql
 SELECT id, name, parent_id FROM edge ORDER BY name;
 SELECT id, name, unit_of_measurement, tag_group FROM tag ORDER BY id;
-SELECT edge, protocol, source FROM camera ORDER BY edge, source;
+SELECT edge, name, protocol, source FROM camera ORDER BY edge, source;
 ```
 
 ### Smoke-test ingest для своей БД

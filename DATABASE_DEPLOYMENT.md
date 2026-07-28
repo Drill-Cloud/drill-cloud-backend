@@ -141,15 +141,15 @@ DO UPDATE SET
 Пример:
 
 ```sql
-INSERT INTO camera (edge, protocol, source)
-VALUES ('edge-demo', 'wss', 'beta.video.drill.greact.ru/ws')
+INSERT INTO camera (edge, name, protocol, source)
+VALUES ('edge-demo', 'Камера 1', 'wss', 'beta.video.drill.greact.ru/ws')
 ON CONFLICT (edge, protocol, source) DO NOTHING;
 ```
 
 Проверка:
 
 ```sql
-SELECT edge, protocol, source
+SELECT edge, name, protocol, source
 FROM camera
 ORDER BY edge, source;
 ```

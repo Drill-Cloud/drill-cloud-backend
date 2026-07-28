@@ -1,4 +1,5 @@
 export type CameraItemDto = {
+  name: string;
   protocol: string;
   source: string;
 };
