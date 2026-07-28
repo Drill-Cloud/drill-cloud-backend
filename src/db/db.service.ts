@@ -19,7 +19,7 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
       connectionTimeoutMillis: 5_000,
       statement_timeout: 60_000,
       query_timeout: 60_000,
-      application_name: 'drill-cloud-v3',
+      application_name: 'drill-cloud',
     });
 
     await this.health();
