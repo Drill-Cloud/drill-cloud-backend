@@ -51,6 +51,7 @@ SELECT create_hypertable(
 
 CREATE TABLE IF NOT EXISTS public.camera (
   edge varchar NOT NULL,
+  name varchar NOT NULL,
   protocol varchar NOT NULL,
   source varchar NOT NULL,
   CONSTRAINT camera_pkey PRIMARY KEY (edge, protocol, source)

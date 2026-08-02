@@ -1,5 +1,8 @@
 import { Injectable, OnModuleDestroy, OnModuleInit } from '@nestjs/common';
-import { Pool, QueryResult, QueryResultRow } from 'pg';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
+import { Pool, PoolClient, QueryResult, QueryResultRow } from 'pg';
+import { DB_MIGRATIONS, DbMigration } from './migrations';
 
 type DatabaseHealth = {
   now: Date;
@@ -22,6 +25,7 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
       application_name: 'drill-cloud-v3',
     });
 
+    await this.runMigrations();
     await this.health();
   }
 
@@ -51,5 +55,54 @@ export class DbService implements OnModuleInit, OnModuleDestroy {
     `);
 
     return result.rows[0];
+  }
+
+  private async runMigrations(): Promise<void> {
+    const client = await this.pool.connect();
+
+    try {
+      await client.query(`SELECT pg_advisory_lock(hashtext('drill-cloud-v3:migrations'))`);
+      await this.ensureMigrationsTable(client);
+
+      for (const migration of DB_MIGRATIONS) {
+        const applied = await this.isMigrationApplied(client, migration.id);
+        if (applied) continue;
+
+        await client.query('BEGIN');
+        try {
+          await client.query(this.readMigrationSql(migration));
+          await client.query('INSERT INTO public.schema_migrations (id) VALUES ($1)', [migration.id]);
+          await client.query('COMMIT');
+        } catch (error) {
+          await client.query('ROLLBACK');
+          throw error;
+        }
+      }
+    } finally {
+      await client.query(`SELECT pg_advisory_unlock(hashtext('drill-cloud-v3:migrations'))`);
+      client.release();
+    }
+  }
+
+  private async ensureMigrationsTable(client: PoolClient): Promise<void> {
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS public.schema_migrations (
+        id varchar(120) PRIMARY KEY,
+        applied_at timestamp(3) without time zone DEFAULT CURRENT_TIMESTAMP NOT NULL
+      )
+    `);
+  }
+
+  private async isMigrationApplied(client: PoolClient, id: string): Promise<boolean> {
+    const result = await client.query<{ exists: boolean }>(
+      'SELECT EXISTS (SELECT 1 FROM public.schema_migrations WHERE id = $1)',
+      [id],
+    );
+
+    return result.rows[0]?.exists ?? false;
+  }
+
+  private readMigrationSql(migration: DbMigration): string {
+    return readFileSync(join(process.cwd(), 'migrations', migration.fileName), 'utf8');
   }
 }
