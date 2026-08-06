@@ -8,6 +8,7 @@ import { HealthController } from './health.controller';
 import { HistoryModule } from './history/history.module';
 import { IngestModule } from './ingest/ingest.module';
 import { TagModule } from './tag/tag.module';
+import { UiSettingsModule } from './ui-settings/ui-settings.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { TagModule } from './tag/tag.module';
     CurrentModule,
     HistoryModule,
     TagModule,
+    UiSettingsModule,
   ],
   controllers: [HealthController],
 })
