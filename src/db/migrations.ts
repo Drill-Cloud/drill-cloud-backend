@@ -20,4 +20,8 @@ export const DB_MIGRATIONS: DbMigration[] = [
     id: '0003_camera_name',
     fileName: '0003_camera_name.sql',
   },
+  {
+    id: '0004_user_ui_settings',
+    fileName: '0004_user_ui_settings.sql',
+  },
 ];
