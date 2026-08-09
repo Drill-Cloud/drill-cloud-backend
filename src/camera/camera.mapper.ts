@@ -5,6 +5,7 @@ export function createCameraResponse(edge: string, rows: CameraRow[]): CameraRes
   return {
     edge,
     items: rows.map((row) => ({
+      name: row.name,
       protocol: row.protocol,
       source: row.source,
     })),

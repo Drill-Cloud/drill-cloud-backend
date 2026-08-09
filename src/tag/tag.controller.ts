@@ -1,8 +1,10 @@
-import { Controller, Get, Header, Query } from '@nestjs/common';
+import { Controller, Get, Header, Query, UseGuards } from '@nestjs/common';
+import { KeycloakAuthGuard } from '../auth/keycloak-auth.guard';
 import { GetTagsDto } from './dto/get-tags.dto';
 import { TagService } from './tag.service';
 
 @Controller('tag')
+@UseGuards(KeycloakAuthGuard)
 export class TagController {
   constructor(private readonly tag: TagService) {}
 

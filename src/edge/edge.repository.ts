@@ -7,7 +7,7 @@ export class EdgeRepository {
   constructor(private readonly db: DbService) {}
 
   /** Reads the edge catalog. */
-  async findAll(parentId: string | null, search: string | null): Promise<EdgeRow[]> {
+  async findAll(parentId: string | null, search: string | null, allowedEdges: string[] | null): Promise<EdgeRow[]> {
     const result = await this.db.query<EdgeRow>(
       `
       SELECT
@@ -16,6 +16,7 @@ export class EdgeRepository {
         e.parent_id
       FROM edge AS e
       WHERE ($1::varchar IS NULL OR e.parent_id = $1::varchar)
+        AND ($3::varchar[] IS NULL OR e.id = ANY($3::varchar[]))
         AND (
           $2::text IS NULL
           OR e.id ILIKE $2::text
@@ -23,7 +24,7 @@ export class EdgeRepository {
         )
       ORDER BY e.name ASC, e.id ASC
       `,
-      [parentId, search],
+      [parentId, search, allowedEdges],
     );
 
     return result.rows;

@@ -9,10 +9,10 @@ export class CameraRepository {
   async findByEdge(edge: string): Promise<CameraRow[]> {
     const result = await this.db.query<CameraRow>(
       `
-        SELECT protocol, source
+        SELECT name, protocol, source
         FROM camera
         WHERE edge = $1
-        ORDER BY source ASC
+        ORDER BY name ASC, source ASC
       `,
       [edge],
     );
