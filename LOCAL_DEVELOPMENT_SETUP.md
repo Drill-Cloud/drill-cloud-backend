@@ -198,7 +198,6 @@ PG_POOL_MAX=20
 CURRENT_EVENTS_POLL_MS=1000
 
 # Настоящая авторизация через серверный SSO.
-KEYCLOAK_AUTH_DISABLED=false
 KEYCLOAK_ISSUER_URL=https://sso.drillcloud.ru/realms/drillcloud
 KEYCLOAK_CLIENT_ID=drillcloud-ui
 KEYCLOAK_EDGE_ROLE_PREFIX=drill-edge-

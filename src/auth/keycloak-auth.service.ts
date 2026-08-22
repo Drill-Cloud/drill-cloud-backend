@@ -13,7 +13,6 @@ type KeycloakPayload = JWTPayload & {
 
 @Injectable()
 export class KeycloakAuthService {
-  private readonly authDisabled = process.env.KEYCLOAK_AUTH_DISABLED === 'true';
   private readonly issuerUrl = process.env.KEYCLOAK_ISSUER_URL || '';
   private readonly clientId = process.env.KEYCLOAK_CLIENT_ID;
   private readonly edgeRolePrefix = process.env.KEYCLOAK_EDGE_ROLE_PREFIX || 'drill-edge-';
@@ -26,15 +25,7 @@ export class KeycloakAuthService {
     ? createRemoteJWKSet(new URL(`${this.issuerUrl}/protocol/openid-connect/certs`))
     : null;
 
-  async verify(token?: string): Promise<AuthUser> {
-    if (this.authDisabled) {
-      return { subject: 'local-auth-disabled', username: null, allowedEdges: ['*'], isAdmin: true };
-    }
-
-    if (!token) {
-      throw new UnauthorizedException('Missing Bearer token.');
-    }
-
+  async verify(token: string): Promise<AuthUser> {
     if (!this.jwks) {
       throw new UnauthorizedException('Keycloak auth is not configured.');
     }
