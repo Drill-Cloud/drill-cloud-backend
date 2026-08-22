@@ -193,13 +193,16 @@ npm install
 ```env
 PORT=3101
 DATABASE_URL=postgres://greact:pG3526l4@194.36.208.86:5433/cloud-beta-dev
-CORS_ALLOWED_ORIGINS=http://localhost:5173
 INGEST_API_KEY=dev-local-key
 PG_POOL_MAX=20
 CURRENT_EVENTS_POLL_MS=1000
 
-# Быстрый локальный режим без SSO.
-KEYCLOAK_AUTH_DISABLED=true
+# Настоящая авторизация через серверный SSO.
+KEYCLOAK_AUTH_DISABLED=false
+KEYCLOAK_ISSUER_URL=https://sso.drillcloud.ru/realms/drillcloud
+KEYCLOAK_CLIENT_ID=drillcloud-ui
+KEYCLOAK_EDGE_ROLE_PREFIX=drill-edge-
+KEYCLOAK_ADMIN_ROLES=drill-admin,admin
 ```
 
 Запуск:
@@ -211,8 +214,10 @@ npm run start:dev
 Проверка:
 
 ```bash
-curl http://localhost:3101/api/edge
+curl http://localhost:3101/api/health
 ```
+
+Защищённые API-маршруты без access token возвращают `401`. UI получает токен через Keycloak и автоматически добавляет его к запросам.
 
 ## 5. UI
 
@@ -229,10 +234,10 @@ DEV_API_URL=http://localhost:3101
 VITE_DIAGRAM_API_URL=
 VITE_TOIR_LIGHT_ORIGIN=https://toir-light.greact.ru
 
-# Для быстрого локального режима Keycloak можно не включать.
-VITE_KEYCLOAK_URL=
-VITE_KEYCLOAK_REALM=
-VITE_KEYCLOAK_CLIENT_ID=
+# Серверный SSO для локального dev-контура.
+VITE_KEYCLOAK_URL=https://sso.drillcloud.ru
+VITE_KEYCLOAK_REALM=drillcloud
+VITE_KEYCLOAK_CLIENT_ID=drillcloud-ui
 ```
 
 Запуск:
@@ -246,6 +251,8 @@ npm run dev
 ```text
 http://localhost:5173
 ```
+
+После открытия UI перенаправит браузер на `https://sso.drillcloud.ru`, а после входа вернёт на локальный адрес. серверный клиент Keycloak настроен для `http://localhost:5173/*`.
 
 ## 6. mqtt-ingest
 

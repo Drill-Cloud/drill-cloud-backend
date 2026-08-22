@@ -43,8 +43,8 @@ Required backend env:
 
 ```bash
 KEYCLOAK_AUTH_DISABLED=false
-KEYCLOAK_ISSUER_URL=https://sso.greact.ru/realms/toir
-KEYCLOAK_CLIENT_ID=greact-drill-ui
+KEYCLOAK_ISSUER_URL=https://sso.drillcloud.ru/realms/drillcloud
+KEYCLOAK_CLIENT_ID=drillcloud-ui
 KEYCLOAK_EDGE_ROLE_PREFIX=drill-edge-
 KEYCLOAK_ADMIN_ROLES=drill-admin,admin
 ```
