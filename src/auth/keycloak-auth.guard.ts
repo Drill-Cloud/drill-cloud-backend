@@ -1,4 +1,4 @@
-import { CanActivate, ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import type { Request } from 'express';
 import { AuthenticatedRequest } from './auth.types';
 import { KeycloakAuthService } from './keycloak-auth.service';
@@ -9,17 +9,11 @@ export class KeycloakAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
-
-    if (!this.auth.isEnabled()) {
-      request.user = this.auth.createSystemUser();
-      return true;
-    }
-
     request.user = await this.auth.verify(this.getToken(request));
     return true;
   }
 
-  private getToken(request: Request): string {
+  private getToken(request: Request): string | undefined {
     const header = request.headers.authorization;
     const [type, token] = header?.split(' ') ?? [];
 
@@ -36,6 +30,6 @@ export class KeycloakAuthGuard implements CanActivate {
       return queryToken[0];
     }
 
-    throw new UnauthorizedException('Missing Bearer token.');
+    return undefined;
   }
 }
