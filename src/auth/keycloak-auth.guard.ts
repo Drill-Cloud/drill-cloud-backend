@@ -9,12 +9,6 @@ export class KeycloakAuthGuard implements CanActivate {
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest<AuthenticatedRequest>();
-
-    if (!this.auth.isEnabled()) {
-      request.user = this.auth.createSystemUser();
-      return true;
-    }
-
     request.user = await this.auth.verify(this.getToken(request));
     return true;
   }

@@ -13,8 +13,7 @@ type KeycloakPayload = JWTPayload & {
 
 @Injectable()
 export class KeycloakAuthService {
-  private readonly authDisabled = process.env.KEYCLOAK_AUTH_DISABLED === 'true';
-  private readonly issuerUrl = process.env.KEYCLOAK_ISSUER_URL;
+  private readonly issuerUrl = process.env.KEYCLOAK_ISSUER_URL || '';
   private readonly clientId = process.env.KEYCLOAK_CLIENT_ID;
   private readonly edgeRolePrefix = process.env.KEYCLOAK_EDGE_ROLE_PREFIX || 'drill-edge-';
   private readonly adminRoles = (process.env.KEYCLOAK_ADMIN_ROLES || 'drill-admin,admin')
@@ -26,72 +25,43 @@ export class KeycloakAuthService {
     ? createRemoteJWKSet(new URL(`${this.issuerUrl}/protocol/openid-connect/certs`))
     : null;
 
-  isEnabled(): boolean {
-    return !this.authDisabled;
-  }
-
-  createSystemUser(): AuthUser {
-    return {
-      subject: 'local-auth-disabled',
-      username: null,
-      allowedEdges: ['*'],
-      isAdmin: true,
-    };
-  }
-
   async verify(token: string): Promise<AuthUser> {
-    if (this.authDisabled) {
-      return this.createSystemUser();
-    }
-
-    if (!this.issuerUrl || !this.jwks) {
+    if (!this.jwks) {
       throw new UnauthorizedException('Keycloak auth is not configured.');
     }
 
+    let payload: KeycloakPayload;
     try {
-      const { payload } = await jwtVerify(token, this.jwks, {
+      const result = await jwtVerify(token, this.jwks, {
         issuer: this.issuerUrl,
       });
-
-      const keycloakPayload = payload as KeycloakPayload;
-      if (this.clientId && keycloakPayload.azp !== this.clientId) {
-        throw new UnauthorizedException('Invalid token client.');
-      }
-
-      const roles = this.getRoles(keycloakPayload);
-      const allowedEdges = this.getAllowedEdgesFromRoles(roles);
-      const isAdmin = roles.some((role) => this.adminRoles.includes(role)) || allowedEdges.includes('*');
-
-      return {
-        subject: keycloakPayload.sub ?? '',
-        username: keycloakPayload.preferred_username ?? null,
-        allowedEdges,
-        isAdmin,
-      };
-    } catch (error) {
-      if (error instanceof UnauthorizedException) {
-        throw error;
-      }
-
+      payload = result.payload as KeycloakPayload;
+    } catch {
       throw new UnauthorizedException('Invalid or expired access token.');
     }
+
+    if (this.clientId && payload.azp !== this.clientId) {
+      throw new UnauthorizedException('Invalid token client.');
+    }
+
+    const roles = [
+      ...(payload.realm_access?.roles ?? []),
+      ...Object.values(payload.resource_access ?? {}).flatMap((access) => access.roles ?? []),
+    ];
+    const allowedEdges = roles
+      .filter((role) => role.startsWith(this.edgeRolePrefix))
+      .map((role) => role.slice(this.edgeRolePrefix.length).trim())
+      .filter(Boolean);
+
+    return {
+      subject: payload.sub ?? '',
+      username: payload.preferred_username ?? null,
+      allowedEdges,
+      isAdmin: allowedEdges.includes('*') || roles.some((role) => this.adminRoles.includes(role)),
+    };
   }
 
   canAccessEdge(user: AuthUser, edge: string): boolean {
     return user.isAdmin || user.allowedEdges.includes('*') || user.allowedEdges.includes(edge);
-  }
-
-  private getAllowedEdgesFromRoles(roles: string[]): string[] {
-    return roles
-      .filter((role) => role.startsWith(this.edgeRolePrefix))
-      .map((role) => role.slice(this.edgeRolePrefix.length).trim())
-      .filter(Boolean);
-  }
-
-  private getRoles(payload: KeycloakPayload): string[] {
-    const realmRoles = payload.realm_access?.roles ?? [];
-    const resourceRoles = Object.values(payload.resource_access ?? {}).flatMap((access) => access.roles ?? []);
-
-    return [...realmRoles, ...resourceRoles];
   }
 }
