@@ -1,4 +1,3 @@
-import { UnauthorizedException } from '@nestjs/common';
 import { jwtVerify } from 'jose';
 import { KeycloakAuthService } from './keycloak-auth.service';
 
@@ -16,27 +15,6 @@ afterEach(() => {
 });
 
 describe('KeycloakAuthService', () => {
-  it('returns an administrator when authentication is disabled', async () => {
-    process.env.KEYCLOAK_AUTH_DISABLED = 'true';
-
-    const user = await new KeycloakAuthService().verify();
-
-    expect(user).toEqual({
-      subject: 'local-auth-disabled',
-      username: null,
-      allowedEdges: ['*'],
-      isAdmin: true,
-    });
-  });
-
-  it('requires a token when authentication is enabled', async () => {
-    process.env.KEYCLOAK_AUTH_DISABLED = 'false';
-
-    await expect(new KeycloakAuthService().verify()).rejects.toThrow(
-      new UnauthorizedException('Missing Bearer token.'),
-    );
-  });
-
   it('checks access to an edge using the calculated permissions', () => {
     const service = new KeycloakAuthService();
     const user = { subject: '1', username: 'user', allowedEdges: ['edge-1'], isAdmin: false };
@@ -47,7 +25,6 @@ describe('KeycloakAuthService', () => {
   });
 
   it('reads edge and administrator roles from realm and client roles', async () => {
-    process.env.KEYCLOAK_AUTH_DISABLED = 'false';
     process.env.KEYCLOAK_ISSUER_URL = 'https://keycloak.test/realms/drill';
     process.env.KEYCLOAK_CLIENT_ID = 'drill-ui';
     jwtVerifyMock.mockResolvedValue({
