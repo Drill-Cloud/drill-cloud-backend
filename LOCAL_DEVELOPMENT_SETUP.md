@@ -102,7 +102,8 @@ INSERT INTO tag (
   comment,
   unit_of_measurement,
   precision,
-  tag_group
+  tag_group,
+  color
 )
 VALUES (
   'BN1_10V_ControlVoltage_Fault',
@@ -112,7 +113,8 @@ VALUES (
   '',
   '',
   0,
-  'Электрика'
+  'Электрика',
+  '#FACC15'
 )
 ON CONFLICT (id)
 DO UPDATE SET
@@ -122,7 +124,8 @@ DO UPDATE SET
   comment = EXCLUDED.comment,
   unit_of_measurement = EXCLUDED.unit_of_measurement,
   precision = EXCLUDED.precision,
-  tag_group = EXCLUDED.tag_group;
+  tag_group = EXCLUDED.tag_group,
+  color = EXCLUDED.color;
 ```
 
 Важно:
@@ -131,6 +134,7 @@ DO UPDATE SET
 - `tag.name` отображается в UI как основное русское имя;
 - `unit_of_measurement` показывается рядом со значением;
 - `min`, `max`, `precision`, `tag_group` используются виджетами и графиками, если заполнены.
+- `color` задается в формате `#RRGGBB` и остается постоянным для тега на всех графиках.
 
 Минимальная камера:
 

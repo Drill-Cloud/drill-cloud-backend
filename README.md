@@ -15,7 +15,7 @@ Database deployment, edge registration and migrations are described in [DATABASE
 The current `cloud` database schema uses these public tables:
 
 - `edge(id, name, parent_id)`
-- `tag(id, name, min, max, comment, unit_of_measurement, precision, tag_group)`
+- `tag(id, name, min, max, comment, unit_of_measurement, precision, tag_group, color)`
 - `current(id, edge, tag, value, createdAt, updatedAt)`
 - `history(edge, timestamp, tag, value, createdAt)`
 - `camera(edge, name, protocol, source)`

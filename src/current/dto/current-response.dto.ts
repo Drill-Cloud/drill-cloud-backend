@@ -12,6 +12,7 @@ export type CurrentItemDto = {
   comment: string | null;
   unitOfMeasurement: string | null;
   precision: number | null;
+  color: string | null;
 };
 
 export type CurrentResponseDto = {

@@ -11,4 +11,5 @@ export type CurrentRow = {
   comment: string | null;
   unit_of_measurement: string | null;
   precision: number | null;
+  color: string | null;
 };
