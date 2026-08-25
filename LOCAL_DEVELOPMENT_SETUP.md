@@ -232,7 +232,7 @@ npm install
 Создать `.env`:
 
 ```env
-BRANCH=
+BRANCH=dev
 DEV_API_URL=http://localhost:3101
 VITE_DIAGRAM_API_URL=
 VITE_TOIR_LIGHT_ORIGIN=https://toir-light.greact.ru
