@@ -19,6 +19,7 @@ export function createCurrentResponse(edge: string, rows: CurrentRow[]): Current
       comment: row.comment,
       unitOfMeasurement: row.unit_of_measurement,
       precision: row.precision,
+      color: row.color,
     })),
   };
 }

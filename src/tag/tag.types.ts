@@ -7,4 +7,5 @@ export type TagRow = {
   comment: string;
   unit_of_measurement: string;
   precision: number | null;
+  color: string;
 };

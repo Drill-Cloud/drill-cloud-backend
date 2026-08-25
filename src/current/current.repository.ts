@@ -22,7 +22,8 @@ export class CurrentRepository {
           t.max,
           t.comment,
           t.unit_of_measurement,
-          t.precision
+          t.precision,
+          t.color
         FROM current AS c
         LEFT JOIN tag AS t
           ON t.id = c.tag

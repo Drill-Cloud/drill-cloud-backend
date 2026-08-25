@@ -13,6 +13,7 @@ export function createTagResponse(rows: TagRow[]): TagResponseDto {
       comment: row.comment,
       unitOfMeasurement: row.unit_of_measurement,
       precision: row.precision,
+      color: row.color,
     })),
   };
 }
