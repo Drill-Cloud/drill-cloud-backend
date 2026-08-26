@@ -10,7 +10,10 @@
     "start:dev": "nest start --watch --exec \"node --env-file=.env\"",
     "start:prod": "node dist/main.js",
     "lint": "eslint \"src/**/*.ts\"",
-    "test": "jest --runInBand"
+    "test": "jest --runInBand",
+    "docs:init": "git submodule update --init --recursive docs/shared",
+    "docs:update": "git submodule update --remote --recursive docs/shared",
+    "docs:status": "git submodule status docs/shared"
   },
   "dependencies": {
     "@nestjs/common": "^11.0.1",
