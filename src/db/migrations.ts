@@ -24,4 +24,8 @@ export const DB_MIGRATIONS: DbMigration[] = [
     id: '0004_user_ui_settings',
     fileName: '0004_user_ui_settings.sql',
   },
+  {
+    id: '0005_tag_color',
+    fileName: '0005_tag_color.sql',
+  },
 ];

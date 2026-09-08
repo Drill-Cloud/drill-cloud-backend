@@ -6,7 +6,7 @@ import { TagRow } from './tag.types';
 export class TagRepository {
   constructor(private readonly db: DbService) {}
 
-  /** Reads the tag catalog. */
+  /** Читает справочник тегов вместе с постоянными цветами графиков. */
   async findAll(search: string | null): Promise<TagRow[]> {
     const result = await this.db.query<TagRow>(
       `
@@ -18,7 +18,8 @@ export class TagRepository {
           t.max,
           t.comment,
           t.unit_of_measurement,
-          t.precision
+          t.precision,
+          t.color
         FROM tag AS t
         WHERE (
           $1::text IS NULL

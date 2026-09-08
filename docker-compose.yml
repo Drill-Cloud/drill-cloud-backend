@@ -1,10 +1,12 @@
 services:
-  drill-cloud:
-    container_name: container-drill-cloud${branch:+-${branch}}
+  drill-cloud-v3:
+    # BRANCH разделяет контейнеры разных окружений на одном Docker-хосте.
+    container_name: "container-drill-cloud-v3-${BRANCH}"
     build: .
     restart: unless-stopped
     environment:
       NODE_ENV: production
+      TZ: ${TZ:-Europe/Moscow}
       PORT: ${PORT}
       DATABASE_URL: ${DATABASE_URL}
       INGEST_API_KEY: ${INGEST_API_KEY}

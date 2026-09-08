@@ -7,6 +7,7 @@ export type TagItemDto = {
   comment: string;
   unitOfMeasurement: string;
   precision: number | null;
+  color: string;
 };
 
 export type TagResponseDto = {
