@@ -1,7 +1,7 @@
 services:
-  drill-cloud-v3:
+  drill-cloud:
     # BRANCH разделяет контейнеры разных окружений на одном Docker-хосте.
-    container_name: "container-drill-cloud-v3-${BRANCH}"
+    container_name: "container-drill-cloud-${BRANCH}"
     build: .
     restart: unless-stopped
     environment:
