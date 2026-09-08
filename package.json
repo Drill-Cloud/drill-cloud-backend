@@ -1,5 +1,5 @@
 {
-  "name": "drill-cloud-v3",
+  "name": "drill-cloud",
   "version": "0.1.0",
   "private": true,
   "description": "Lightweight Drill Cloud API for an existing PostgreSQL/TimescaleDB schema.",
